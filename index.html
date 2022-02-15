@@ -68,7 +68,7 @@
 
 <body>
     <div class="main">
-        <p id="status-text"></p>
+        <p style="color: gray" id="status-text"></p>
         
         <div class="arrow" id="up-arrow">
             <svg xmlns="http://www.w3.org/2000/svg" width="499" height="433" viewBox="0 0 499 433">
@@ -123,17 +123,18 @@
             upArrow.classList = "arrow arrow-disabled"
             downArrow.classList = "arrow arrow-disabled"
 
-            firstTone = tone["C4"]
-            secondTone = tone["E4"]
-            correctAnswer = secondTone > firstTone ? "sharp" : "flat";
+            toneDelta = 0.15 // 5 Cents
+            isSharper = Boolean(Math.round(Math.random()));
+            correctAnswer = isSharper ? "sharp" : "flat";
+            firstTone = FrequencyFromNote(0)
+            secondTone = FrequencyFromNote(0 + (isSharper ? toneDelta : -toneDelta))
 
             centDelta = Math.round(Math.abs(NoteFromFrequency(secondTone) - NoteFromFrequency(firstTone)) * 100)
-            console.log(centDelta)
-            statusText.innerHTML = centDelta
+            statusText.innerHTML = `${centDelta} Cents`
 
-            //playTone(firstTone)
+            playTone(firstTone)
             setTimeout(() => {
-                //playTone(secondTone)
+                playTone(secondTone)
                 upArrow.classList = "arrow"
                 downArrow.classList = "arrow"
             }, 1750);
