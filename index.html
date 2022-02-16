@@ -2,6 +2,10 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intonation Trainer</title>
+
     <style>
         @font-face {font-family: "Posterama Text W15 SemiBold";
             src: url("Assets/PosteramaTextW15SemiBold/FontFace/55baa1d6961f56c57cda7ce1bf41b6e7.eot"); /* IE9 */
@@ -17,6 +21,11 @@
         body { background-color: #1B1B1C; }
 
         .main { position: absolute; width: min(100vw, 50vh); height: 100vh; left: calc(((100vw - min(100vw, 50vh)) / 2)); background-color: #1B1B1C; }
+
+        .menu { position: absolute; width: 100vw; }
+        .main-menu { filter: blur(5px); pointer-events: none; }
+        
+        .menu-button { position: relative; width: 90%; padding: 15px 5%; color: gray; text-align: center; }
 
         .arrow { position: absolute; width: min(60vw, 30vh); height: min(60vw, 30vh); left: min(20vw, 10vh); }
         .arrow svg { width: 100%; height: 100%; fill: #3C3B3D; }
@@ -37,7 +46,7 @@
 </head>
 
 <body>
-    <div class="main">
+    <div class="main main-menu" id="main">
         <div class="arrow" id="up-arrow">
             <svg xmlns="http://www.w3.org/2000/svg" width="499" height="433" viewBox="0 0 499 433">
                 <path id="UpArrow" d="M236.5,22.556a15,15,0,0,1,25.994,0L486.042,410.511a15,15,0,0,1-13,22.489H25.955a15,15,0,0,1-13-22.489Z" />
@@ -50,8 +59,16 @@
             </svg>
         </div>
     </div>
+
+    <div class="menu" id="menu">
+        <div class="menu-button" onclick="StartRound(1.00)">Deaf (100 Cents)</div>
+        <div class="menu-button" onclick="StartRound(0.20)">Easy (20 Cents)</div>
+        <div class="menu-button" onclick="StartRound(0.10)">Normal (10 Cents)</div>
+        <div class="menu-button" onclick="StartRound(0.05)">Hard (5 Cents)</div>
+        <div class="menu-button" onclick="StartRound(0.03)">Barley Possible (3 Cents)</div>
+    </div>
     
-    <p style="position: absolute; padding: 5px; color: gray" id="status-text"></p>
+    <p style="position: absolute; padding: 5px; color: gray;" id="status-text"></p>
 
     <script src="simpleTones.js"></script>
     <script>
@@ -69,26 +86,31 @@
         statusText = document.getElementById("status-text");
         upArrow = document.getElementById("up-arrow");
         downArrow = document.getElementById("down-arrow");
-        isSharper = "none"
+        main = document.getElementById("main");
+        menu = document.getElementById("menu");
+        isSharper = "none";
+        lastToneDelta = 1
 
-        function StartRound() {
-            upArrow.classList = "arrow arrow-disabled"
-            downArrow.classList = "arrow arrow-disabled"
+        function StartRound(toneDelta = 1) {
+            lastToneDelta = toneDelta
+            upArrow.classList = "arrow arrow-disabled";
+            downArrow.classList = "arrow arrow-disabled";
+            main.classList = "main";
+            menu.style.display = "none";
 
-            toneDelta = 1
             isSharper = Boolean(Math.round(Math.random()));
             correctAnswer = isSharper ? "sharp" : "flat";
-            firstTone = FrequencyFromNote(0)
-            secondTone = FrequencyFromNote(0 + (isSharper ? toneDelta : -toneDelta))
+            firstTone = FrequencyFromNote(0);
+            secondTone = FrequencyFromNote(0 + (isSharper ? toneDelta : -toneDelta));
 
-            centDelta = Math.round(Math.abs(NoteFromFrequency(secondTone) - NoteFromFrequency(firstTone)) * 100)
-            statusText.innerHTML = `+/- ${centDelta} Cents`
+            centDelta = Math.round(Math.abs(NoteFromFrequency(secondTone) - NoteFromFrequency(firstTone)) * 100);
+            statusText.innerHTML = `+/- ${centDelta} Cents`;
 
-            playTone(firstTone)
+            playTone(firstTone);
             setTimeout(() => {
-                playTone(secondTone)
-                upArrow.classList = "arrow"
-                downArrow.classList = "arrow"
+                playTone(secondTone);
+                upArrow.classList = "arrow";
+                downArrow.classList = "arrow";
             }, 1750);
         }
 
@@ -98,13 +120,11 @@
             upArrow.classList = (answer == correctAnswer) ? "arrow arrow-correct" : "arrow arrow-incorrect";
             downArrow.classList = (answer == correctAnswer) ? "arrow arrow-correct" : "arrow arrow-incorrect";
 
-            setTimeout(() => { StartRound() }, 1500);
+            setTimeout(() => { StartRound(lastToneDelta) }, 1500);
         }
 
         upArrow.addEventListener('click', event => { Guess("sharp"); });
         downArrow.addEventListener('click', event => { Guess("flat"); });
-
-        StartRound();
     </script>
 </body>
 
