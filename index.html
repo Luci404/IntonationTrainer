@@ -100,8 +100,9 @@
 
             isSharper = Boolean(Math.round(Math.random()));
             correctAnswer = isSharper ? "sharp" : "flat";
-            firstTone = FrequencyFromNote(0);
-            secondTone = FrequencyFromNote(0 + (isSharper ? toneDelta : -toneDelta));
+            baseNote = Math.floor(Math.random() * 24) - 12
+            firstTone = FrequencyFromNote(baseNote);
+            secondTone = FrequencyFromNote(baseNote + (isSharper ? toneDelta : -toneDelta));
 
             centDelta = Math.round(Math.abs(NoteFromFrequency(secondTone) - NoteFromFrequency(firstTone)) * 100);
             statusText.innerHTML = `+/- ${centDelta} Cents`;
